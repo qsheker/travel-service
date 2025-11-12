@@ -1,4 +1,4 @@
-package org.qsheker.hotelservice.db.models;
+package org.qsheker.hotelservice.context.db.models;
 
 
 public enum BookingStatus {

@@ -1,11 +1,13 @@
-package org.qsheker.hotelservice.db.models;
+package org.qsheker.hotelservice.context.db.models;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@Data
 @Entity
 @Table(name = "hotel_bookings")
 public class HotelBooking {
