@@ -1,43 +1,38 @@
 package org.qsheker.hotelservice.db.models;
 
 import jakarta.persistence.*;
-import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.util.Date;
-import java.util.List;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-@Data
 @Entity
 @Table(name = "hotel_bookings")
 public class HotelBooking {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(nullable = false)
-    private String userId;
+    private Long userId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "hotel_id")
     private Hotel hotel;
 
     @Column(nullable = false)
-    private Date checkIn;
+    private LocalDate checkIn;
 
     @Column(nullable = false)
-    private Date checkOut;
+    private LocalDate checkOut;
 
     private Integer guests;
+
+    private Double totalPrice;
 
     @Enumerated(EnumType.STRING)
     private BookingStatus status;
 
-    private Double totalPrice;
-
-    @ElementCollection
-    private List<String> addons;
-
     @CreationTimestamp
-    private Date createdAt;
+    private LocalDateTime createdAt;
 }

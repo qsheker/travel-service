@@ -5,40 +5,37 @@ import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.util.Date;
-import java.util.List;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
 @Table(name = "car_rentals")
 public class CarRental {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(nullable = false)
-    private String userId;
+    private Long userId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "car_id")
     private Car car;
 
     @Column(nullable = false)
-    private Date pickupDate;
+    private LocalDate pickupDate;
 
     @Column(nullable = false)
-    private Date returnDate;
+    private LocalDate returnDate;
 
-    @Column(nullable = false)
     private String pickupLocation;
 
-    private String returnLocation;
+    private Double totalPrice;
 
     @Enumerated(EnumType.STRING)
     private RentalStatus status;
 
-    private Double totalPrice;
-
     @CreationTimestamp
-    private Date createdAt;
+    private LocalDateTime createdAt;
 }
