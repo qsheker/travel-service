@@ -36,7 +36,7 @@ public class CarRentalService {
         Double totalPrice = car.getDailyPrice() * days;
 
         CarRental rental = new CarRental();
-        rental.setCar(car);
+        rental.setCarId(carId);
         rental.setUserId(userId);
         rental.setPickupDate(pickupDate);
         rental.setReturnDate(returnDate);

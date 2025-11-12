@@ -1,0 +1,42 @@
+version: "3.9"
+
+services:
+  # Hotel Database
+  hotel-db:
+    container_name: hotel-db
+    image: postgres:15
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: ${HOTEL_DB:-hotel_db}
+    volumes:
+      - hotel_postgres:/var/lib/postgresql/data
+    ports:
+      - "${HOTEL_DB_PORT:-5433}:5432"
+    networks:
+      - travel-network
+    restart: unless-stopped
+
+  # Car Database
+  car-db:
+    container_name: car-db
+    image: postgres:15
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: ${CAR_DB:-car_db}
+    volumes:
+      - car_postgres:/var/lib/postgresql/data
+    ports:
+      - "${CAR_DB_PORT:-5434}:5432"
+    networks:
+      - travel-network
+    restart: unless-stopped
+
+networks:
+  travel-network:
+    driver: bridge
+
+volumes:
+  hotel_postgres:
+  car_postgres:

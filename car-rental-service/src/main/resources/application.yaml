@@ -1,3 +1,17 @@
 spring:
   application:
     name: car-rental-service
+  datasource:
+    url: jdbc:postgresql://localhost:5434/car_db
+    username: postgres
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+server:
+  port: 9092

@@ -2,9 +2,12 @@ package org.qsheker.hotelservice.api;
 
 import org.qsheker.hotelservice.context.db.models.Hotel;
 import org.qsheker.hotelservice.context.db.models.HotelBooking;
+import org.qsheker.hotelservice.context.pattern.strategy.criteria.HotelSearchService;
 import org.qsheker.hotelservice.context.service.impl.HotelService;
 import org.qsheker.hotelservice.web.dto.BookingRequest;
+import org.qsheker.hotelservice.web.dto.HotelSearchCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,15 +20,23 @@ public class HotelController {
 
     @Autowired
     private HotelService hotelService;
+    @Autowired
+    private HotelSearchService hotelSearchService;
+
 
     @GetMapping("/search")
     public ResponseEntity<List<Hotel>> searchHotels(
-            @RequestParam String location,
-            @RequestParam LocalDate checkIn,
-            @RequestParam LocalDate checkOut,
-            @RequestParam Integer guests) {
+            @RequestParam(required = false) String location,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkIn,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkOut,
+            @RequestParam(required = false) Integer guests,
+            @RequestParam(required = false) Double maxPrice,
+            @RequestParam(required = false) Double minRating,
+            @RequestParam(defaultValue = "PRICE") String strategy) {
 
-        List<Hotel> hotels = hotelService.searchHotels(location, checkIn, checkOut, guests);
+        HotelSearchCriteria criteria = new HotelSearchCriteria(location, checkIn, checkOut, guests, maxPrice, minRating);
+        List<Hotel> hotels = hotelSearchService.searchWithStrategy(criteria, strategy);
+
         return ResponseEntity.ok(hotels);
     }
 

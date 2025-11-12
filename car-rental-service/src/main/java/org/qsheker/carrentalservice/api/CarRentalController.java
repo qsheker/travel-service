@@ -2,6 +2,7 @@ package org.qsheker.carrentalservice.api;
 
 import org.qsheker.carrentalservice.context.db.models.Car;
 import org.qsheker.carrentalservice.context.db.models.CarRental;
+import org.qsheker.carrentalservice.context.patterns.CarRentalFacade;
 import org.qsheker.carrentalservice.context.service.impl.CarRentalService;
 import org.qsheker.carrentalservice.web.dto.RentalRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,21 @@ public class CarRentalController {
 
     @Autowired
     private CarRentalService carRentalService;
+
+    @Autowired
+    private CarRentalFacade carRentalFacade; // Using Facade
+
+    @PostMapping("/quick-rent")
+    public ResponseEntity<CarRental> quickRent(@RequestBody RentalRequest request) {
+        CarRental rental = carRentalFacade.quickRent(
+                request.getCarId(),
+                request.getUserId(),
+                request.getPickupDate(),
+                request.getReturnDate(),
+                request.getLocation()
+        );
+        return ResponseEntity.ok(rental);
+    }
 
     @GetMapping("/search")
     public ResponseEntity<List<Car>> searchCars(
@@ -35,7 +51,7 @@ public class CarRentalController {
                 request.getUserId(),
                 request.getPickupDate(),
                 request.getReturnDate(),
-                request.getPickupLocation()
+                request.getLocation()
         );
         return ResponseEntity.ok(rental);
     }

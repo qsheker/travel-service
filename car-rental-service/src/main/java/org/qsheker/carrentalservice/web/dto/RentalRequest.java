@@ -10,5 +10,5 @@ public class RentalRequest {
     private Long userId;
     private LocalDate pickupDate;
     private LocalDate returnDate;
-    private String pickupLocation;
+    private String Location;
 }

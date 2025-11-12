@@ -19,9 +19,8 @@ public class CarRental {
     @Column(nullable = false)
     private Long userId;
 
-    @ManyToOne
-    @JoinColumn(name = "car_id")
-    private Car car;
+    @Column(name = "car_id")
+    private Long carId;
 
     @Column(nullable = false)
     private LocalDate pickupDate;
