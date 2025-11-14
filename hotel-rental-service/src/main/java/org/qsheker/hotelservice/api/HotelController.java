@@ -2,6 +2,9 @@ package org.qsheker.hotelservice.api;
 
 import org.qsheker.hotelservice.context.db.models.Hotel;
 import org.qsheker.hotelservice.context.db.models.HotelBooking;
+import org.qsheker.hotelservice.context.pattern.factory.StrategyFactory;
+import org.qsheker.hotelservice.context.pattern.strategy.SearchStrategy;
+import org.qsheker.hotelservice.context.pattern.strategy.StrategyType;
 import org.qsheker.hotelservice.context.pattern.strategy.criteria.HotelSearchService;
 import org.qsheker.hotelservice.context.service.impl.HotelService;
 import org.qsheker.hotelservice.web.dto.BookingRequest;
@@ -22,6 +25,8 @@ public class HotelController {
     private HotelService hotelService;
     @Autowired
     private HotelSearchService hotelSearchService;
+    @Autowired
+    private StrategyFactory strategyFactory;
 
 
     @GetMapping("/search")
@@ -32,10 +37,11 @@ public class HotelController {
             @RequestParam(required = false) Integer guests,
             @RequestParam(required = false) Double maxPrice,
             @RequestParam(required = false) Double minRating,
-            @RequestParam(defaultValue = "PRICE") String strategy) {
+            @RequestParam(defaultValue = "PRICE") StrategyType strategy) {
 
+        SearchStrategy searchStrategy = strategyFactory.of(strategy);
         HotelSearchCriteria criteria = new HotelSearchCriteria(location, checkIn, checkOut, guests, maxPrice, minRating);
-        List<Hotel> hotels = hotelSearchService.searchWithStrategy(criteria, strategy);
+        List<Hotel> hotels = hotelSearchService.searchWithStrategy(criteria, searchStrategy);
 
         return ResponseEntity.ok(hotels);
     }

@@ -23,20 +23,9 @@ public class HotelSearchService {
     @Autowired
     private RatingSearchStrategy ratingStrategy;
 
-    public List<Hotel> searchWithStrategy(HotelSearchCriteria criteria, String strategyType) {
+    public List<Hotel> searchWithStrategy(HotelSearchCriteria criteria, SearchStrategy strategyType) {
         List<Hotel> allHotels = hotelRepository.findByLocationContainingIgnoreCase(
                 criteria.getLocation() != null ? criteria.getLocation() : "");
-
-        SearchStrategy strategy = switch (strategyType.toUpperCase()) {
-            case "PRICE" -> priceStrategy;
-            case "RATING" -> ratingStrategy;
-            default -> priceStrategy;
-        };
-
-        return strategy.search(allHotels, criteria);
-    }
-
-    public List<Hotel> search(HotelSearchCriteria criteria) {
-        return searchWithStrategy(criteria, "PRICE");
+        return strategyType.search(allHotels, criteria);
     }
 }
