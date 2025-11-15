@@ -20,7 +20,7 @@ public class CarRentalController {
     private CarRentalService carRentalService;
 
     @Autowired
-    private CarRentalFacade carRentalFacade; // Using Facade
+    private CarRentalFacade carRentalFacade;
 
     @PostMapping("/quick-rent")
     public ResponseEntity<CarRental> quickRent(@RequestBody RentalRequest request) {

@@ -2,7 +2,7 @@ spring:
   application:
     name: car-rental-service
   datasource:
-    url: jdbc:postgresql://localhost:5434/car_db
+    url: jdbc:postgresql://car-db:5432/car_db
     username: postgres
     password: password
   jpa:
