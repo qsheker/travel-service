@@ -1,4 +1,3 @@
-version: "3.9"
 
 services:
   # Hotel Database
@@ -6,13 +5,13 @@ services:
     container_name: hotel-db
     image: postgres:15
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
-      POSTGRES_DB: ${HOTEL_DB:-hotel_db}
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: hotel_db
     volumes:
       - hotel_postgres:/var/lib/postgresql/data
     ports:
-      - "${HOTEL_DB_PORT:-5433}:5432"
+      - "5433:5432"
     networks:
       - travel-network
     restart: unless-stopped
@@ -22,13 +21,37 @@ services:
     container_name: car-db
     image: postgres:15
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
-      POSTGRES_DB: ${CAR_DB:-car_db}
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: car_db
     volumes:
       - car_postgres:/var/lib/postgresql/data
     ports:
-      - "${CAR_DB_PORT:-5434}:5432"
+      - "5434:5432"
+    networks:
+      - travel-network
+    restart: unless-stopped
+
+  # Hotel Service
+  hotel-service:
+    container_name: hotel-service
+    build: ./hotel-rental-service
+    ports:
+      - "9091:9091"
+    depends_on:
+      - hotel-db
+    networks:
+      - travel-network
+    restart: unless-stopped
+
+  # Car Service
+  car-service:
+    container_name: car-service
+    build: ./car-rental-service
+    ports:
+      - "9092:9092"
+    depends_on:
+      - car-db
     networks:
       - travel-network
     restart: unless-stopped

@@ -2,7 +2,7 @@ spring:
   application:
     name: hotel-rental-service
   datasource:
-    url: jdbc:postgresql://localhost:5433/hotel_db
+    url: jdbc:postgresql://hotel-db:5432/hotel_db
     username: postgres
     password: password
   jpa:
