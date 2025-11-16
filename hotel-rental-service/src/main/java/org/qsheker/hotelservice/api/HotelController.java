@@ -1,72 +1,77 @@
 package org.qsheker.hotelservice.api;
 
-import org.qsheker.hotelservice.context.db.models.Hotel;
-import org.qsheker.hotelservice.context.db.models.HotelBooking;
-import org.qsheker.hotelservice.context.pattern.factory.StrategyFactory;
-import org.qsheker.hotelservice.context.pattern.strategy.SearchStrategy;
 import org.qsheker.hotelservice.context.pattern.strategy.StrategyType;
-import org.qsheker.hotelservice.context.pattern.strategy.criteria.HotelSearchService;
-import org.qsheker.hotelservice.context.service.impl.HotelService;
-import org.qsheker.hotelservice.web.dto.BookingRequest;
-import org.qsheker.hotelservice.web.dto.HotelSearchCriteria;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
+import org.qsheker.hotelservice.context.service.HotelService;
+import org.qsheker.hotelservice.web.dto.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/hotels")
 public class HotelController {
 
-    @Autowired
-    private HotelService hotelService;
-    @Autowired
-    private HotelSearchService hotelSearchService;
-    @Autowired
-    private StrategyFactory strategyFactory;
+    private final HotelService hotelService;
 
+    public HotelController(HotelService hotelService) {
+        this.hotelService = hotelService;
+    }
 
-    @GetMapping("/search")
-    public ResponseEntity<List<Hotel>> searchHotels(
-            @RequestParam(required = false) String location,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkIn,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkOut,
-            @RequestParam(required = false) Integer guests,
-            @RequestParam(required = false) Double maxPrice,
-            @RequestParam(required = false) Double minRating,
-            @RequestParam(defaultValue = "PRICE") StrategyType strategy) {
-
-        SearchStrategy searchStrategy = strategyFactory.of(strategy);
-        HotelSearchCriteria criteria = new HotelSearchCriteria(location, checkIn, checkOut, guests, maxPrice, minRating);
-        List<Hotel> hotels = hotelSearchService.searchWithStrategy(criteria, searchStrategy);
-
+    @GetMapping
+    public ResponseEntity<List<HotelResponse>> getAllHotels() {
+        List<HotelResponse> hotels = hotelService.getAllHotels();
         return ResponseEntity.ok(hotels);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<HotelResponse> getHotelById(@PathVariable Long id) {
+        HotelResponse hotel = hotelService.getHotelById(id);
+        return ResponseEntity.ok(hotel);
+    }
+
+    @PostMapping
+    public ResponseEntity<HotelResponse> createHotel(@RequestBody CreateHotelRequest request) {
+        HotelResponse hotel = hotelService.createHotel(request);
+        return ResponseEntity.ok(hotel);
+    }
+
+    @PostMapping("/search")
+    public ResponseEntity<List<HotelResponse>> searchHotels(@RequestBody HotelSearchRequest request,
+                                                            @RequestParam(value = "strategyMode", defaultValue = "PRICE")StrategyType strategyType) {
+        List<HotelResponse> hotels = hotelService.searchHotelsWithStrategy(request, strategyType);
+        return ResponseEntity.ok(hotels);
+    }
+
+    @PostMapping("/{id}/availability")
+    public ResponseEntity<AvailabilityResponse> checkAvailability(
+            @PathVariable Long id,
+            @RequestBody AvailabilityRequest request) {
+        AvailabilityResponse response = hotelService.checkAvailability(id, request);
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping("/book")
-    public ResponseEntity<HotelBooking> bookHotel(@RequestBody BookingRequest request) {
-        HotelBooking booking = hotelService.bookHotel(
-                request.getHotelId(),
-                request.getUserId(),
-                request.getCheckIn(),
-                request.getCheckOut(),
-                request.getGuests()
-        );
+    public ResponseEntity<BookingResponse> bookHotel(@RequestBody BookingRequest request) {
+        BookingResponse booking = hotelService.bookHotel(request);
+        return ResponseEntity.ok(booking);
+    }
+
+    @GetMapping("/bookings/{id}")
+    public ResponseEntity<BookingResponse> getBookingById(@PathVariable Long id) {
+        BookingResponse booking = hotelService.getBookingById(id);
         return ResponseEntity.ok(booking);
     }
 
     @GetMapping("/users/{userId}/bookings")
-    public ResponseEntity<List<HotelBooking>> getUserBookings(@PathVariable Long userId) {
-        List<HotelBooking> bookings = hotelService.getUserBookings(userId);
+    public ResponseEntity<List<BookingResponse>> getUserBookings(@PathVariable Long userId) {
+        List<BookingResponse> bookings = hotelService.getUserBookings(userId);
         return ResponseEntity.ok(bookings);
     }
 
-    @PutMapping("/bookings/{bookingId}/cancel")
-    public ResponseEntity<HotelBooking> cancelBooking(@PathVariable Long bookingId) {
-        HotelBooking booking = hotelService.cancelBooking(bookingId);
+    @PutMapping("/bookings/{id}/cancel")
+    public ResponseEntity<BookingResponse> cancelBooking(@PathVariable Long id) {
+        BookingResponse booking = hotelService.cancelBooking(id);
         return ResponseEntity.ok(booking);
     }
 }

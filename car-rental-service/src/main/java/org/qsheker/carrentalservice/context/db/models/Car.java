@@ -14,9 +14,17 @@ public class Car {
     @Column(nullable = false)
     private String model;
 
-    private String category;
+    @Enumerated(EnumType.STRING)
+    private Category category;
 
     private Double dailyPrice;
 
     private String location;
+
+    private boolean available;
+
+    @PrePersist
+    public void prePersist(){
+        this.available=true;
+    }
 }

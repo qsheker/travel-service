@@ -24,13 +24,16 @@ public class CarRentalService {
     @Autowired
     private CarRentalRepository rentalRepository;
 
-    public List<Car> searchCars(String location, LocalDate pickupDate, LocalDate returnDate) {
-        return carRepository.findByLocationContainingIgnoreCase(location);
-    }
-
     public CarRental rentCar(Long carId, Long userId, LocalDate pickupDate, LocalDate returnDate, String pickupLocation) {
         Car car = carRepository.findById(carId)
                 .orElseThrow(() -> new RuntimeException("Car not found"));
+
+        if (!car.isAvailable()) {
+            throw new RuntimeException("Car is not available for rental");
+        }
+
+        car.setAvailable(false);
+        carRepository.save(car);
 
         long days = ChronoUnit.DAYS.between(pickupDate, returnDate);
         Double totalPrice = car.getDailyPrice() * days;
@@ -55,7 +58,17 @@ public class CarRentalService {
         CarRental rental = rentalRepository.findById(rentalId)
                 .orElseThrow(() -> new RuntimeException("Rental not found"));
 
+        Car car = carRepository.findById(rental.getCarId())
+                .orElseThrow(() -> new RuntimeException("Car not found"));
+        car.setAvailable(true);
+        carRepository.save(car);
+
         rental.setStatus(RentalStatus.CANCELLED);
         return rentalRepository.save(rental);
+    }
+
+    public CarRental getRentalDetails(Long id){
+        return rentalRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Rental not found"));
     }
 }

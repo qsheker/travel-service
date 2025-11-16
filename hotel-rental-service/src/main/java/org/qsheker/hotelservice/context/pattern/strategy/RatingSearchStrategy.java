@@ -4,7 +4,6 @@ import org.qsheker.hotelservice.context.db.models.Hotel;
 import org.qsheker.hotelservice.web.dto.HotelSearchCriteria;
 import org.springframework.stereotype.Component;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,9 +15,6 @@ public class RatingSearchStrategy implements SearchStrategy {
         return hotels.stream()
                 .filter(hotel -> criteria.getMinRating() == null ||
                         hotel.getRating() >= criteria.getMinRating())
-                .filter(hotel -> criteria.getLocation() == null ||
-                        hotel.getLocation().toLowerCase().contains(criteria.getLocation().toLowerCase()))
-                .sorted(Comparator.comparing(Hotel::getRating).reversed())
                 .collect(Collectors.toList());
     }
 }

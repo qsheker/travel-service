@@ -13,6 +13,7 @@ public class StrategyFactory {
         return switch (strategyType){
             case PRICE -> new PriceSearchStrategy();
             case RATING -> new RatingSearchStrategy();
+            default -> new PriceSearchStrategy();
         };
     }
 }

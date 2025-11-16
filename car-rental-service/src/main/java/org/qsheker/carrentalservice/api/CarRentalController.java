@@ -1,19 +1,17 @@
 package org.qsheker.carrentalservice.api;
 
-import org.qsheker.carrentalservice.context.db.models.Car;
 import org.qsheker.carrentalservice.context.db.models.CarRental;
-import org.qsheker.carrentalservice.context.patterns.CarRentalFacade;
+import org.qsheker.carrentalservice.patterns.CarRentalFacade;
 import org.qsheker.carrentalservice.context.service.impl.CarRentalService;
 import org.qsheker.carrentalservice.web.dto.RentalRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/cars")
+@RequestMapping("/api/v1/car-rental")
 public class CarRentalController {
 
     @Autowired
@@ -21,6 +19,12 @@ public class CarRentalController {
 
     @Autowired
     private CarRentalFacade carRentalFacade;
+
+    @GetMapping("/{id}")
+    public ResponseEntity<CarRental> getRentalDetails(@PathVariable Long id){
+        CarRental response = carRentalService.getRentalDetails(id);
+        return ResponseEntity.ok(response);
+    }
 
     @PostMapping("/quick-rent")
     public ResponseEntity<CarRental> quickRent(@RequestBody RentalRequest request) {
@@ -32,16 +36,6 @@ public class CarRentalController {
                 request.getLocation()
         );
         return ResponseEntity.ok(rental);
-    }
-
-    @GetMapping("/search")
-    public ResponseEntity<List<Car>> searchCars(
-            @RequestParam String location,
-            @RequestParam LocalDate pickupDate,
-            @RequestParam LocalDate returnDate) {
-
-        List<Car> cars = carRentalService.searchCars(location, pickupDate, returnDate);
-        return ResponseEntity.ok(cars);
     }
 
     @PostMapping("/rent")

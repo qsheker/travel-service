@@ -1,20 +1,27 @@
-package org.qsheker.carrentalservice.context.patterns;
+package org.qsheker.carrentalservice.patterns;
 
+import org.qsheker.carrentalservice.context.db.models.Car;
 import org.qsheker.carrentalservice.context.db.models.CarRental;
 import org.qsheker.carrentalservice.context.db.models.RentalStatus;
+import org.qsheker.carrentalservice.context.db.repository.CarRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class CarRentalBuilder {
+    @Autowired
+    private CarRepository carRepository;
+
     private Long carId;
     private Long userId;
     private LocalDate pickupDate;
     private LocalDate returnDate;
     private String pickupLocation;
-    private List<String> extras = new ArrayList<>();
-    private Double totalPrice = 0.0;
 
     public CarRentalBuilder setCar(Long carId) {
         this.carId = carId;
@@ -32,22 +39,31 @@ public class CarRentalBuilder {
         return this;
     }
 
-    public CarRentalBuilder addExtra(String extra, Double price) {
-        this.extras.add(extra);
-        this.totalPrice += price;
+    public CarRentalBuilder setPickupLocation(String pickupLocation) {
+        this.pickupLocation = pickupLocation;
         return this;
     }
 
     public CarRental build() {
+        if (carId == null || userId == null || pickupDate == null || returnDate == null) {
+            throw new IllegalStateException("Missing required rental information");
+        }
+
+        Car car = carRepository.findById(carId)
+                .orElseThrow(() -> new RuntimeException("Car not found"));
+
+        long rentalDays = ChronoUnit.DAYS.between(pickupDate, returnDate);
+        Double totalPrice = car.getDailyPrice() * rentalDays;
+
         CarRental rental = new CarRental();
         rental.setCarId(this.carId);
         rental.setUserId(this.userId);
         rental.setPickupDate(this.pickupDate);
-        rental.setPickupLocation(this.pickupLocation);
         rental.setReturnDate(this.returnDate);
         rental.setPickupLocation(this.pickupLocation);
-        rental.setTotalPrice(this.totalPrice);
+        rental.setTotalPrice(totalPrice);
         rental.setStatus(RentalStatus.CONFIRMED);
+
         return rental;
     }
 }

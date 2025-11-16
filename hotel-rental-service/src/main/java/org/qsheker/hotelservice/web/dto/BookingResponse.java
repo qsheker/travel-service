@@ -2,13 +2,14 @@ package org.qsheker.hotelservice.web.dto;
 
 import lombok.Data;
 
-import java.time.LocalDate;
-
 @Data
-public class BookingRequest {
-    private Long hotelId;
+public class BookingResponse {
+    private Long id;
     private Long userId;
+    private HotelResponse hotel;
     private String checkIn;
     private String checkOut;
     private Integer guests;
+    private Double totalPrice;
+    private String status;
 }

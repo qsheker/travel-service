@@ -11,4 +11,5 @@ public interface CarRepository extends JpaRepository<Car, Long> {
     List<Car> findByLocationContainingIgnoreCase(String location);
     List<Car> findByCategory(String category);
     List<Car> findByDailyPriceBetween(Double minPrice, Double maxPrice);
+    List<Car> findAllByAvailable(boolean available);
 }
